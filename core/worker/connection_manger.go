@@ -1,4 +1,4 @@
-package gcs
+package worker
 
 import (
 	"context"
@@ -21,15 +21,14 @@ type connectionManager struct {
 	ctx           context.Context
 	lg            *zap.Logger
 	advertiseAddr string
-	srv           *GCS
+	srv           *worker
 	pool          *ants.Pool
 	nextID        uint64
-	nextSeq       uint64
 
 	conns sync.Map // uint64 -> *connection
 }
 
-func NewConnectionManager(ctx context.Context, lg *zap.Logger, advertiseAddr string, srv *GCS) *connectionManager {
+func NewConnectionManager(ctx context.Context, lg *zap.Logger, advertiseAddr string, srv *worker) *connectionManager {
 	return &connectionManager{
 		ctx:           ctx,
 		lg:            lg,
@@ -109,13 +108,17 @@ func (cm *connectionManager) OnPacket(conn common.Connection, header *codec.Head
 		return cm.onEstablishAck(conn)
 	case codec.MetaShakeHand:
 		cm.lg.Debug("onShakeHand", zap.String("remote", conn.Remote()))
+	case codec.RayAssignTask:
+		cm.lg.Debug("onAssignTask", zap.String("remote", conn.Remote()))
+		req, _ := payload.(*pb.AssignTaskRequest)
+		return cm.onAssignTask(conn, header, req)
 	}
 	return nil
 }
 
 func (cm *connectionManager) onEstablish(conn common.Connection, header *codec.Header, req *pb.EstablishReq) error {
 	conn.SetEstablished()
-	resp := &pb.EstablishResponse{Err: "OK"}
+	resp := &pb.EstablishResponse{Err: "OK", Mode: common.ModeWorker}
 	ack := &codec.Header{Uri: codec.MetaEstablishAck, SeqId: header.SeqId}
 	payload, err := codec.EncodePayload(ack, resp)
 	if err != nil {
@@ -127,6 +130,26 @@ func (cm *connectionManager) onEstablish(conn common.Connection, header *codec.H
 func (cm *connectionManager) onEstablishAck(conn common.Connection) error {
 	conn.NotifyEstablish()
 	return nil
+}
+
+func (cm *connectionManager) onAssignTask(conn common.Connection, header *codec.Header, req *pb.AssignTaskRequest) error {
+	funcName := req.FuncName
+	task := common.Task{
+		ID:           req.TaskId,
+		FuncName:     funcName,
+		Args:         req.Args,
+		Dependencies: req.Dependencies,
+	}
+	var err error
+	switch funcName {
+	case common.TaskFuncAddTowInt:
+		err = cm.srv.onAddTowInt(conn, task)
+	}
+	resp := &pb.AssignTaskResponse{Accepted: err == nil, TaskId: task.ID}
+	ack := &codec.Header{Uri: codec.RayAssignTaskResp, SeqId: header.SeqId}
+	payload, err := codec.EncodePayload(ack, resp)
+	conn.Send(payload)
+	return err
 }
 
 func (cm *connectionManager) Ontick() {
@@ -147,5 +170,5 @@ func (cm *connectionManager) HandlePacket(conn common.Connection, header *codec.
 }
 
 func (cm *connectionManager) GetMode() int32 {
-	return common.ModeGCS
+	return common.ModeWorker
 }

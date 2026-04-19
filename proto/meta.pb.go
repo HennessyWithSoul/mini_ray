@@ -24,7 +24,7 @@ const (
 type EstablishReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Addr          string                 `protobuf:"bytes,1,opt,name=Addr,proto3" json:"Addr,omitempty"`
-	Type          string                 `protobuf:"bytes,2,opt,name=Type,proto3" json:"Type,omitempty"`
+	Mode          int32                  `protobuf:"varint,2,opt,name=Mode,proto3" json:"Mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -66,16 +66,16 @@ func (x *EstablishReq) GetAddr() string {
 	return ""
 }
 
-func (x *EstablishReq) GetType() string {
+func (x *EstablishReq) GetMode() int32 {
 	if x != nil {
-		return x.Type
+		return x.Mode
 	}
-	return ""
+	return 0
 }
 
 type EstablishResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          string                 `protobuf:"bytes,1,opt,name=Type,proto3" json:"Type,omitempty"`
+	Mode          int32                  `protobuf:"varint,1,opt,name=Mode,proto3" json:"Mode,omitempty"`
 	Err           string                 `protobuf:"bytes,2,opt,name=Err,proto3" json:"Err,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -111,11 +111,11 @@ func (*EstablishResponse) Descriptor() ([]byte, []int) {
 	return file_meta_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *EstablishResponse) GetType() string {
+func (x *EstablishResponse) GetMode() int32 {
 	if x != nil {
-		return x.Type
+		return x.Mode
 	}
-	return ""
+	return 0
 }
 
 func (x *EstablishResponse) GetErr() string {
@@ -205,9 +205,9 @@ const file_meta_proto_rawDesc = "" +
 	"meta.proto\x12\x05proto\"6\n" +
 	"\fEstablishReq\x12\x12\n" +
 	"\x04Addr\x18\x01 \x01(\tR\x04Addr\x12\x12\n" +
-	"\x04Type\x18\x02 \x01(\tR\x04Type\"9\n" +
+	"\x04Mode\x18\x02 \x01(\x05R\x04Mode\"9\n" +
 	"\x11EstablishResponse\x12\x12\n" +
-	"\x04Type\x18\x01 \x01(\tR\x04Type\x12\x10\n" +
+	"\x04Mode\x18\x01 \x01(\x05R\x04Mode\x12\x10\n" +
 	"\x03Err\x18\x02 \x01(\tR\x03Err\"\x0e\n" +
 	"\fShakeHandReq\"\x0f\n" +
 	"\rShakeHandResp2\x82\x01\n" +

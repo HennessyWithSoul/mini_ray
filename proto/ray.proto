@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package proto;
 
-option go_package = "mini-ray/proto/rayrpc;rayrpc";
+option go_package = "mini-ray/proto;proto";
 
 // 1. 任务提交（Driver → Scheduler）
 
@@ -34,6 +34,19 @@ message FetchTaskResponse {
   string func_name = 2;
   repeated bytes args = 3;
   bool has_task = 4;
+}
+
+// 3.1 Scheduler 向 Worker 主动分配任务（Push 模型）
+message AssignTaskRequest {
+  string task_id = 1;
+  string func_name = 2;
+  repeated bytes args = 3;
+  repeated string dependencies = 4;
+}
+message AssignTaskResponse {
+  bool accepted = 1;
+  string worker_id = 2;
+  string task_id = 3;
 }
 
 // 4. Worker 向 GCS 查询对象位置

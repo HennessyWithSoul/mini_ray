@@ -28,6 +28,7 @@ var (
 // ClientPacketHandler Establish 完成后处理业务 URI（各节点可选实现）。
 type ClientPacketHandler interface {
 	HandlePacket(cc Connection, h *codec.Header, msg proto.Message) error
+	GetMode() int32
 }
 
 // ClientConnOption 可选配置。
@@ -249,7 +250,7 @@ func (c *connection) sendEstablish() error {
 	seq := atomic.AddUint64(&c.seqID, 1)
 	inner, err := codec.EncodePayload(
 		&codec.Header{Uri: codec.MetaEstablish, SeqId: seq},
-		&pb.EstablishReq{Addr: c.localAddr},
+		&pb.EstablishReq{Addr: c.localAddr, Mode: c.handler.GetMode()},
 	)
 	if err != nil {
 		return err
@@ -393,12 +394,14 @@ func (c *connection) OnPacket(h *codec.Header, msg proto.Message) (err error) {
 		}
 		c.established.SetTo(true)
 		atomic.StoreInt64(&c.failure, 0)
-		if c.lg != nil {
-			c.lg.Info("established", zap.String("local", c.local))
+		c.lg.Info("established", zap.String("local", c.local))
+		if c.handler != nil {
+			return c.handler.HandlePacket(c, h, msg)
 		}
 	case codec.MetaShakeHand, codec.MetaShakeHandResp:
 		// 保活 / 对端心跳，刷新 lastRecv 即可
 	default:
+		c.lg.Debug("onPacket", zap.Uint16("uri", h.Uri))
 		if c.handler != nil {
 			return c.handler.HandlePacket(c, h, msg)
 		}

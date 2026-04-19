@@ -1,4 +1,4 @@
-package scheduler
+package worker
 
 import (
 	"encoding/binary"
@@ -37,7 +37,7 @@ type connection struct {
 	establishChan chan struct{}
 }
 
-func newConnection(cm *connectionManager, srv *Scheduler, id uint64, remote string, gc gnet.Conn, lg *zap.Logger) *connection {
+func newConnection(cm *connectionManager, srv *worker, id uint64, remote string, gc gnet.Conn, lg *zap.Logger) *connection {
 	return &connection{
 		cm:            cm,
 		srv:           srv,

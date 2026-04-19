@@ -4,6 +4,7 @@ type Options struct {
 	maxConnections int
 	ReuseAddr      bool
 	ReusePort      bool
+	TaskChanSize   int
 }
 
 type Option func(*Options)
@@ -23,5 +24,11 @@ func WithReuseAddr(reuseAddr bool) Option {
 func WithReusePort(reusePort bool) Option {
 	return func(o *Options) {
 		o.ReusePort = reusePort
+	}
+}
+
+func WithTaskChanSize(size int) Option {
+	return func(o *Options) {
+		o.TaskChanSize = size
 	}
 }

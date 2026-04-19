@@ -7,11 +7,11 @@ option go_package = "./proto";
 
 message  EstablishReq{
   string Addr =1;
-  string Type=2;
+  int32 Mode=2;
 }
 
 message EstablishResponse {
-  string Type=1;
+  int32 Mode=1;
   string Err=2;
 }
 

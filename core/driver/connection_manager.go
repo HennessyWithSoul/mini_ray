@@ -26,7 +26,7 @@ type connectionManager struct {
 	pool          *ants.Pool
 	nextID        uint64
 	nextSeq       uint64
-	nodeType      string
+	nodeMode      int
 
 	conns     sync.Map // uint64 -> *connection
 	typeConns sync.Map // type -> []*connection
@@ -38,7 +38,7 @@ func NewConnectionManager(lg *zap.Logger, advertiseAddr string, srv *Driver) *co
 		advertiseAddr: advertiseAddr,
 		srv:           srv,
 		pool:          srv.pool,
-		nodeType:      common.NodeTypeDriver,
+		nodeMode:      common.ModeDriver,
 	}
 }
 
@@ -122,9 +122,9 @@ func (cm *connectionManager) OnPacket(conn *connection, header *codec.Header, pa
 
 func (cm *connectionManager) onEstablish(conn *connection, header *codec.Header, req *pb.EstablishReq) error {
 	conn.established.SetTo(true)
-	typeConns, _ := cm.typeConns.LoadOrStore(req.Type, &sync.Map{})
+	typeConns, _ := cm.typeConns.LoadOrStore(req.Mode, &sync.Map{})
 	typeConns.(*sync.Map).Store(conn.ID(), conn)
-	resp := &pb.EstablishResponse{Type: cm.nodeType, Err: common.EstablishResponseOK}
+	resp := &pb.EstablishResponse{Mode: int32(cm.nodeMode), Err: common.EstablishResponseOK}
 	ack := &codec.Header{Uri: codec.MetaEstablishAck, SeqId: header.SeqId}
 	payload, err := codec.EncodePayload(ack, resp)
 	if err != nil {

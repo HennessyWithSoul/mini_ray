@@ -168,7 +168,7 @@ func (c *connection) Establish() {
 	seq := atomic.AddUint64(&c.cm.nextSeq, 1)
 	payload, err := codec.EncodePayload(
 		&codec.Header{Uri: codec.MetaEstablish, SeqId: seq},
-		&pb.EstablishReq{Addr: c.cm.advertiseAddr, Type: c.cm.nodeType},
+		&pb.EstablishReq{Addr: c.cm.advertiseAddr, Mode: int32(c.cm.nodeMode)},
 	)
 	if err != nil {
 		c.lg.Error("encode establish", zap.Error(err))

@@ -10,6 +10,13 @@ const (
 )
 
 const (
+	ModeWorker    = 1
+	ModeScheduler = 2
+	ModeDriver    = 3
+	ModeGCS       = 4
+)
+
+const (
 	EstablishResponseOK    = "OK"
 	EstablishResponseError = "Error"
 )

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package proto;
+// Keep import path aligned with go.mod module name.
+// The part after ';' is the generated Go package name.
+option go_package = "./proto";
+
+message  EstablishReq{
+  string Addr =1;
+  string Type=2;
+}
+
+message EstablishResponse {
+  string Type=1;
+  string Err=2;
+}
+
+message ShakeHandReq {}
+
+message ShakeHandResp {}
+
+service Maintain {
+  rpc Establish(EstablishReq) returns (EstablishResponse) {}
+  rpc ShakeHand(ShakeHandReq) returns (ShakeHandResp) {}
+}

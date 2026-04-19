@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "mini-ray/proto/rayrpc;rayrpc";
+
+// 1. 任务提交（Driver → Scheduler）
+
+message DriverSubmitTaskRequest {
+  string task_id = 1;
+  string func_name = 2;
+  repeated bytes args = 3;
+  repeated string dependencies = 4;
+}
+message SchedulerSubmitTaskResponse {
+  bool success = 1;
+  string task_id=2;
+}
+
+// 2. 调度器向 GCS 注册任务
+message RegisterTaskToGCSRequest {
+  string task_id = 1;
+  string status = 2;
+  repeated string dependencies = 3;
+}
+message RegisterTaskToGCSResponse {}
+
+// 3. Worker 向 Scheduler 拉取任务
+message FetchTaskRequest {
+  string worker_id = 1;
+}
+message FetchTaskResponse {
+  string task_id = 1;
+  string func_name = 2;
+  repeated bytes args = 3;
+  bool has_task = 4;
+}
+
+// 4. Worker 向 GCS 查询对象位置
+message GetObjectLocationRequest {
+  string object_id = 1;
+}
+message GetObjectLocationResponse {
+  string node_addr = 1;
+}
+
+// 5. Worker 向 GCS 上报任务结果 & 对象
+message ReportTaskResultRequest {
+  string task_id = 1;
+  string status = 2;
+  string object_id = 3;
+  bytes result_data = 4;
+}
+message ReportTaskResultResponse {}
+
+// 6. Driver 从 GCS 获取最终结果
+message GetTaskResultRequest {
+  string task_id = 1;
+}
+message GetTaskResultResponse {
+  string status = 1;
+  bytes result = 2;
+}

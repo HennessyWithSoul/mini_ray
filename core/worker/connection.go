@@ -167,6 +167,7 @@ func (c *connection) Loop() {
 		case <-c.establishChan:
 			c.established.SetToIf(false, true)
 			c.cm.conns.Store(c.id, c)
+			c.cm.connAddrs.Store(c.remote, c)
 			c.lg.Info("established", zap.String("remote", c.remote))
 		}
 		for c.established.IsSet() {

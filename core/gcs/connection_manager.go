@@ -109,6 +109,14 @@ func (cm *connectionManager) OnPacket(conn common.Connection, header *codec.Head
 		return cm.onEstablishAck(conn)
 	case codec.MetaShakeHand:
 		cm.lg.Debug("onShakeHand", zap.String("remote", conn.Remote()))
+	case codec.RayReportTaskResult:
+		req, _ := payload.(*pb.ReportTaskResultRequest)
+		cm.lg.Debug("onReportTaskResult", zap.String("remote", conn.Remote()), zap.String("onjectID", req.ObjectId))
+		return cm.onReportTaskResult(conn, req)
+	case codec.RayGetObjectLocation:
+		req, _ := payload.(*pb.GetObjectDataRequest)
+		cm.lg.Debug("onGetObjectData", zap.String("remote", conn.Remote()), zap.String("objectID", req.ObjectId))
+		return cm.onGetObjectLocation(conn, req)
 	}
 	return nil
 }
@@ -129,6 +137,11 @@ func (cm *connectionManager) onEstablishAck(conn common.Connection) error {
 	return nil
 }
 
+func (cm *connectionManager) onReportTaskResult(conn common.Connection, req *pb.ReportTaskResultRequest) error {
+	cm.srv.objectLocationMap[ObjectID(req.ObjectId)] = conn.Remote()
+	return nil
+}
+
 func (cm *connectionManager) Ontick() {
 	cm.conns.Range(func(key, value interface{}) bool {
 		cm.lg.Debug("ontick", zap.Uint64("key", key.(uint64)))
@@ -141,9 +154,30 @@ func (cm *connectionManager) Ontick() {
 	})
 }
 
+func (cm *connectionManager) onGetObjectLocation(conn common.Connection, req *pb.GetObjectDataRequest) error {
+	objectID := ObjectID(req.ObjectId)
+	location, ok := cm.srv.objectLocationMap[objectID]
+	if !ok {
+		header := &codec.Header{Uri: codec.RayGetObjectLocationResp, SeqId: atomic.AddUint64(&cm.nextID, 1)}
+		resp := &pb.GetObjectLocationResponse{NodeAddr: ""}
+		payload, err := codec.EncodePayload(header, resp)
+		if err != nil {
+			return err
+		}
+		return conn.Send(payload)
+	}
+	header := &codec.Header{Uri: codec.RayGetObjectLocationResp, SeqId: atomic.AddUint64(&cm.nextID, 1)}
+	resp := &pb.GetObjectLocationResponse{NodeAddr: location}
+	payload, err := codec.EncodePayload(header, resp)
+	if err != nil {
+		return err
+	}
+	return conn.Send(payload)
+}
+
 // 主动建联的包处理
 func (cm *connectionManager) HandlePacket(conn common.Connection, header *codec.Header, payload proto.Message) error {
-	return nil
+	return cm.OnPacket(conn, header, payload)
 }
 
 func (cm *connectionManager) GetMode() int32 {

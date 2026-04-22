@@ -358,6 +358,7 @@ type AssignTaskRequest struct {
 	FuncName      string                 `protobuf:"bytes,2,opt,name=func_name,json=funcName,proto3" json:"func_name,omitempty"`
 	Args          [][]byte               `protobuf:"bytes,3,rep,name=args,proto3" json:"args,omitempty"`
 	Dependencies  []string               `protobuf:"bytes,4,rep,name=dependencies,proto3" json:"dependencies,omitempty"`
+	ArgsType      []string               `protobuf:"bytes,5,rep,name=args_type,json=argsType,proto3" json:"args_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -416,6 +417,13 @@ func (x *AssignTaskRequest) GetArgs() [][]byte {
 func (x *AssignTaskRequest) GetDependencies() []string {
 	if x != nil {
 		return x.Dependencies
+	}
+	return nil
+}
+
+func (x *AssignTaskRequest) GetArgsType() []string {
+	if x != nil {
+		return x.ArgsType
 	}
 	return nil
 }
@@ -484,6 +492,7 @@ func (x *AssignTaskResponse) GetTaskId() string {
 type GetObjectLocationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ObjectId      string                 `protobuf:"bytes,1,opt,name=object_id,json=objectId,proto3" json:"object_id,omitempty"`
+	Uuid          string                 `protobuf:"bytes,2,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -525,9 +534,17 @@ func (x *GetObjectLocationRequest) GetObjectId() string {
 	return ""
 }
 
+func (x *GetObjectLocationRequest) GetUuid() string {
+	if x != nil {
+		return x.Uuid
+	}
+	return ""
+}
+
 type GetObjectLocationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	NodeAddr      string                 `protobuf:"bytes,1,opt,name=node_addr,json=nodeAddr,proto3" json:"node_addr,omitempty"`
+	Uuid          string                 `protobuf:"bytes,2,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -569,6 +586,142 @@ func (x *GetObjectLocationResponse) GetNodeAddr() string {
 	return ""
 }
 
+func (x *GetObjectLocationResponse) GetUuid() string {
+	if x != nil {
+		return x.Uuid
+	}
+	return ""
+}
+
+// 4.1 Worker 向 Worker 获取 Object 数据
+type GetObjectDataRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ObjectId      string                 `protobuf:"bytes,1,opt,name=object_id,json=objectId,proto3" json:"object_id,omitempty"`
+	RequesterId   string                 `protobuf:"bytes,2,opt,name=requester_id,json=requesterId,proto3" json:"requester_id,omitempty"`
+	Uuid          string                 `protobuf:"bytes,3,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetObjectDataRequest) Reset() {
+	*x = GetObjectDataRequest{}
+	mi := &file_ray_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetObjectDataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetObjectDataRequest) ProtoMessage() {}
+
+func (x *GetObjectDataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ray_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetObjectDataRequest.ProtoReflect.Descriptor instead.
+func (*GetObjectDataRequest) Descriptor() ([]byte, []int) {
+	return file_ray_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetObjectDataRequest) GetObjectId() string {
+	if x != nil {
+		return x.ObjectId
+	}
+	return ""
+}
+
+func (x *GetObjectDataRequest) GetRequesterId() string {
+	if x != nil {
+		return x.RequesterId
+	}
+	return ""
+}
+
+func (x *GetObjectDataRequest) GetUuid() string {
+	if x != nil {
+		return x.Uuid
+	}
+	return ""
+}
+
+type GetObjectDataResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Found         bool                   `protobuf:"varint,1,opt,name=found,proto3" json:"found,omitempty"`
+	Data          []byte                 `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	Uuid          string                 `protobuf:"bytes,4,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetObjectDataResponse) Reset() {
+	*x = GetObjectDataResponse{}
+	mi := &file_ray_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetObjectDataResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetObjectDataResponse) ProtoMessage() {}
+
+func (x *GetObjectDataResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ray_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetObjectDataResponse.ProtoReflect.Descriptor instead.
+func (*GetObjectDataResponse) Descriptor() ([]byte, []int) {
+	return file_ray_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GetObjectDataResponse) GetFound() bool {
+	if x != nil {
+		return x.Found
+	}
+	return false
+}
+
+func (x *GetObjectDataResponse) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *GetObjectDataResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *GetObjectDataResponse) GetUuid() string {
+	if x != nil {
+		return x.Uuid
+	}
+	return ""
+}
+
 // 5. Worker 向 GCS 上报任务结果 & 对象
 type ReportTaskResultRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -582,7 +735,7 @@ type ReportTaskResultRequest struct {
 
 func (x *ReportTaskResultRequest) Reset() {
 	*x = ReportTaskResultRequest{}
-	mi := &file_ray_proto_msgTypes[10]
+	mi := &file_ray_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -594,7 +747,7 @@ func (x *ReportTaskResultRequest) String() string {
 func (*ReportTaskResultRequest) ProtoMessage() {}
 
 func (x *ReportTaskResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ray_proto_msgTypes[10]
+	mi := &file_ray_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -607,7 +760,7 @@ func (x *ReportTaskResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportTaskResultRequest.ProtoReflect.Descriptor instead.
 func (*ReportTaskResultRequest) Descriptor() ([]byte, []int) {
-	return file_ray_proto_rawDescGZIP(), []int{10}
+	return file_ray_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ReportTaskResultRequest) GetTaskId() string {
@@ -646,7 +799,7 @@ type ReportTaskResultResponse struct {
 
 func (x *ReportTaskResultResponse) Reset() {
 	*x = ReportTaskResultResponse{}
-	mi := &file_ray_proto_msgTypes[11]
+	mi := &file_ray_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -658,7 +811,7 @@ func (x *ReportTaskResultResponse) String() string {
 func (*ReportTaskResultResponse) ProtoMessage() {}
 
 func (x *ReportTaskResultResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ray_proto_msgTypes[11]
+	mi := &file_ray_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -671,7 +824,7 @@ func (x *ReportTaskResultResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportTaskResultResponse.ProtoReflect.Descriptor instead.
 func (*ReportTaskResultResponse) Descriptor() ([]byte, []int) {
-	return file_ray_proto_rawDescGZIP(), []int{11}
+	return file_ray_proto_rawDescGZIP(), []int{13}
 }
 
 // 6. Driver 从 GCS 获取最终结果
@@ -684,7 +837,7 @@ type GetTaskResultRequest struct {
 
 func (x *GetTaskResultRequest) Reset() {
 	*x = GetTaskResultRequest{}
-	mi := &file_ray_proto_msgTypes[12]
+	mi := &file_ray_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -696,7 +849,7 @@ func (x *GetTaskResultRequest) String() string {
 func (*GetTaskResultRequest) ProtoMessage() {}
 
 func (x *GetTaskResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ray_proto_msgTypes[12]
+	mi := &file_ray_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -709,7 +862,7 @@ func (x *GetTaskResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskResultRequest.ProtoReflect.Descriptor instead.
 func (*GetTaskResultRequest) Descriptor() ([]byte, []int) {
-	return file_ray_proto_rawDescGZIP(), []int{12}
+	return file_ray_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetTaskResultRequest) GetTaskId() string {
@@ -729,7 +882,7 @@ type GetTaskResultResponse struct {
 
 func (x *GetTaskResultResponse) Reset() {
 	*x = GetTaskResultResponse{}
-	mi := &file_ray_proto_msgTypes[13]
+	mi := &file_ray_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -741,7 +894,7 @@ func (x *GetTaskResultResponse) String() string {
 func (*GetTaskResultResponse) ProtoMessage() {}
 
 func (x *GetTaskResultResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ray_proto_msgTypes[13]
+	mi := &file_ray_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -754,7 +907,7 @@ func (x *GetTaskResultResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskResultResponse.ProtoReflect.Descriptor instead.
 func (*GetTaskResultResponse) Descriptor() ([]byte, []int) {
-	return file_ray_proto_rawDescGZIP(), []int{13}
+	return file_ray_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetTaskResultResponse) GetStatus() string {
@@ -795,20 +948,32 @@ const file_ray_proto_rawDesc = "" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x1b\n" +
 	"\tfunc_name\x18\x02 \x01(\tR\bfuncName\x12\x12\n" +
 	"\x04args\x18\x03 \x03(\fR\x04args\x12\x19\n" +
-	"\bhas_task\x18\x04 \x01(\bR\ahasTask\"\x81\x01\n" +
+	"\bhas_task\x18\x04 \x01(\bR\ahasTask\"\x9e\x01\n" +
 	"\x11AssignTaskRequest\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x1b\n" +
 	"\tfunc_name\x18\x02 \x01(\tR\bfuncName\x12\x12\n" +
 	"\x04args\x18\x03 \x03(\fR\x04args\x12\"\n" +
-	"\fdependencies\x18\x04 \x03(\tR\fdependencies\"f\n" +
+	"\fdependencies\x18\x04 \x03(\tR\fdependencies\x12\x1b\n" +
+	"\targs_type\x18\x05 \x03(\tR\bargsType\"f\n" +
 	"\x12AssignTaskResponse\x12\x1a\n" +
 	"\baccepted\x18\x01 \x01(\bR\baccepted\x12\x1b\n" +
 	"\tworker_id\x18\x02 \x01(\tR\bworkerId\x12\x17\n" +
-	"\atask_id\x18\x03 \x01(\tR\x06taskId\"7\n" +
+	"\atask_id\x18\x03 \x01(\tR\x06taskId\"K\n" +
 	"\x18GetObjectLocationRequest\x12\x1b\n" +
-	"\tobject_id\x18\x01 \x01(\tR\bobjectId\"8\n" +
+	"\tobject_id\x18\x01 \x01(\tR\bobjectId\x12\x12\n" +
+	"\x04uuid\x18\x02 \x01(\tR\x04uuid\"L\n" +
 	"\x19GetObjectLocationResponse\x12\x1b\n" +
-	"\tnode_addr\x18\x01 \x01(\tR\bnodeAddr\"\x88\x01\n" +
+	"\tnode_addr\x18\x01 \x01(\tR\bnodeAddr\x12\x12\n" +
+	"\x04uuid\x18\x02 \x01(\tR\x04uuid\"j\n" +
+	"\x14GetObjectDataRequest\x12\x1b\n" +
+	"\tobject_id\x18\x01 \x01(\tR\bobjectId\x12!\n" +
+	"\frequester_id\x18\x02 \x01(\tR\vrequesterId\x12\x12\n" +
+	"\x04uuid\x18\x03 \x01(\tR\x04uuid\"k\n" +
+	"\x15GetObjectDataResponse\x12\x14\n" +
+	"\x05found\x18\x01 \x01(\bR\x05found\x12\x12\n" +
+	"\x04data\x18\x02 \x01(\fR\x04data\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\x12\x12\n" +
+	"\x04uuid\x18\x04 \x01(\tR\x04uuid\"\x88\x01\n" +
 	"\x17ReportTaskResultRequest\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x16\n" +
 	"\x06status\x18\x02 \x01(\tR\x06status\x12\x1b\n" +
@@ -834,7 +999,7 @@ func file_ray_proto_rawDescGZIP() []byte {
 	return file_ray_proto_rawDescData
 }
 
-var file_ray_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_ray_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_ray_proto_goTypes = []any{
 	(*DriverSubmitTaskRequest)(nil),     // 0: proto.DriverSubmitTaskRequest
 	(*SchedulerSubmitTaskResponse)(nil), // 1: proto.SchedulerSubmitTaskResponse
@@ -846,10 +1011,12 @@ var file_ray_proto_goTypes = []any{
 	(*AssignTaskResponse)(nil),          // 7: proto.AssignTaskResponse
 	(*GetObjectLocationRequest)(nil),    // 8: proto.GetObjectLocationRequest
 	(*GetObjectLocationResponse)(nil),   // 9: proto.GetObjectLocationResponse
-	(*ReportTaskResultRequest)(nil),     // 10: proto.ReportTaskResultRequest
-	(*ReportTaskResultResponse)(nil),    // 11: proto.ReportTaskResultResponse
-	(*GetTaskResultRequest)(nil),        // 12: proto.GetTaskResultRequest
-	(*GetTaskResultResponse)(nil),       // 13: proto.GetTaskResultResponse
+	(*GetObjectDataRequest)(nil),        // 10: proto.GetObjectDataRequest
+	(*GetObjectDataResponse)(nil),       // 11: proto.GetObjectDataResponse
+	(*ReportTaskResultRequest)(nil),     // 12: proto.ReportTaskResultRequest
+	(*ReportTaskResultResponse)(nil),    // 13: proto.ReportTaskResultResponse
+	(*GetTaskResultRequest)(nil),        // 14: proto.GetTaskResultRequest
+	(*GetTaskResultResponse)(nil),       // 15: proto.GetTaskResultResponse
 }
 var file_ray_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -870,7 +1037,7 @@ func file_ray_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ray_proto_rawDesc), len(file_ray_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

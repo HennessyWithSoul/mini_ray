@@ -2,6 +2,8 @@ package common
 
 import "time"
 
+type ObjectType string
+
 const (
 	NodeTypeDriver    = "driver"
 	NodeTypeGCS       = "gcs"
@@ -30,3 +32,12 @@ const (
 
 // DefaultShakehandTimeout 全局 gnet Client TCP keepalive（秒）。
 const DefaultShakehandTimeout = 30
+
+const (
+	ObjectTypeInt     ObjectType = "int"
+	ObjectTypeFloat64 ObjectType = "float64"
+	ObjectTypeBool    ObjectType = "bool"
+	ObjectTypeString  ObjectType = "string"
+	ObjectTypeBytes   ObjectType = "bytes"
+	ObjectTypeObject  ObjectType = "object"
+)

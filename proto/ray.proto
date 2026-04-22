@@ -42,6 +42,7 @@ message AssignTaskRequest {
   string func_name = 2;
   repeated bytes args = 3;
   repeated string dependencies = 4;
+  repeated string args_type = 5;
 }
 message AssignTaskResponse {
   bool accepted = 1;
@@ -52,9 +53,24 @@ message AssignTaskResponse {
 // 4. Worker 向 GCS 查询对象位置
 message GetObjectLocationRequest {
   string object_id = 1;
+  string uuid = 2;
 }
 message GetObjectLocationResponse {
   string node_addr = 1;
+  string uuid = 2;
+}
+
+// 4.1 Worker 向 Worker 获取 Object 数据
+message GetObjectDataRequest {
+  string object_id = 1;
+  string requester_id = 2;
+  string uuid = 3;
+}
+message GetObjectDataResponse {
+  bool found = 1;
+  bytes data = 2;
+  string error = 3;
+  string uuid = 4;
 }
 
 // 5. Worker 向 GCS 上报任务结果 & 对象

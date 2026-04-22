@@ -19,15 +19,18 @@ const (
 	defaultWriteBufferCap   = 64 * 1024
 )
 
+type ObjectID string
+
 type GCS struct {
-	ctx           context.Context
-	lg            *zap.Logger
-	pool          *ants.Pool
-	listenAddr    string
-	advertiseAddr string
-	started       abool.AtomicBool
-	options       common.Options
-	connMgr       *connectionManager
+	ctx               context.Context
+	lg                *zap.Logger
+	pool              *ants.Pool
+	listenAddr        string
+	advertiseAddr     string
+	started           abool.AtomicBool
+	options           common.Options
+	connMgr           *connectionManager
+	objectLocationMap map[ObjectID]string
 }
 
 func NewGCS(ctx context.Context, lg *zap.Logger, workerPool *ants.Pool, listenAddr string, advertiseAddr string, opts ...common.Option) *GCS {
@@ -38,15 +41,17 @@ func NewGCS(ctx context.Context, lg *zap.Logger, workerPool *ants.Pool, listenAd
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	newGCS := &GCS{
-		ctx:           ctx,
-		lg:            lg,
-		pool:          workerPool,
-		listenAddr:    listenAddr,
-		advertiseAddr: advertiseAddr,
-		options:       options,
+		ctx:               ctx,
+		lg:                lg,
+		pool:              workerPool,
+		listenAddr:        listenAddr,
+		advertiseAddr:     advertiseAddr,
+		objectLocationMap: make(map[ObjectID]string),
+		options:           options,
 	}
 	mgr := NewConnectionManager(ctx, lg, advertiseAddr, newGCS)
 	newGCS.connMgr = mgr
+
 	return newGCS
 }
 

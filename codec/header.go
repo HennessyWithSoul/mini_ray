@@ -130,6 +130,8 @@ const (
 	RayGetTaskResultResp     = 111
 	RayAssignTask            = 112
 	RayAssignTaskResp        = 113
+	RayGetObjectData         = 114
+	RayGetObjectDataResp     = 115
 )
 
 // UnmarshalRayBody 解码 ray.proto 中各请求/响应（与 Ray* 常量一一对应）。
@@ -176,6 +178,12 @@ func UnmarshalRayBody(uri uint16, body []byte) (proto.Message, error) {
 		return m, proto.Unmarshal(body, m)
 	case RayAssignTaskResp:
 		m := new(pb.AssignTaskResponse)
+		return m, proto.Unmarshal(body, m)
+	case RayGetObjectData:
+		m := new(pb.GetObjectDataRequest)
+		return m, proto.Unmarshal(body, m)
+	case RayGetObjectDataResp:
+		m := new(pb.GetObjectDataResponse)
 		return m, proto.Unmarshal(body, m)
 	default:
 		return nil, fmt.Errorf("codec: not a ray uri %d", uri)

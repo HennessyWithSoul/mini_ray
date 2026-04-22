@@ -4,6 +4,7 @@ type Task struct {
 	ID           string
 	FuncName     string
 	Args         [][]byte
+	ArgsType     []string
 	Dependencies []string
 }
 

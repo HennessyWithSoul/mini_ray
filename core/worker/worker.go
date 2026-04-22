@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"mini-ray/common"
+	"strconv"
 	"time"
 
 	"github.com/panjf2000/ants/v2"
@@ -26,6 +27,7 @@ type worker struct {
 	started       abool.AtomicBool
 	options       common.Options
 	connMgr       *connectionManager
+	objectStorage *objectStorage
 }
 
 func NewWorker(ctx context.Context, lg *zap.Logger, pool *ants.Pool, listenAddr, advertiseAddr string, opts ...common.Option) *worker {
@@ -40,7 +42,8 @@ func NewWorker(ctx context.Context, lg *zap.Logger, pool *ants.Pool, listenAddr,
 		advertiseAddr: advertiseAddr,
 		options:       options,
 	}
-	w.connMgr = NewConnectionManager(ctx, lg, advertiseAddr, w)
+	w.connMgr = NewConnectionManager(ctx, lg, advertiseAddr, w, opts...)
+	w.objectStorage = NewObjectStorage(lg, pool)
 	return w
 }
 
@@ -62,11 +65,22 @@ func (w *worker) Start() {
 				w.lg.Panic("Failed to start gnet", zap.Error(err))
 			}
 		})
+		w.pool.Submit(func() {
+			w.Loop()
+		})
+		w.pool.Submit(func() {
+			w.connMgr.Loop()
+		})
 	}
 }
 
 func (w *worker) Loop() {
-	//w.started.SetTo(true)
+	for w.started.IsSet() {
+		select {
+		//case objectID := <-w.registerObjectChan:
+		//
+		}
+	}
 }
 
 func (w *worker) Connect(ctx context.Context, addr string) {
@@ -75,8 +89,11 @@ func (w *worker) Connect(ctx context.Context, addr string) {
 
 func (w *worker) onAddTowInt(conn common.Connection, task common.Task) error {
 	w.lg.Debug("onAddTowInt", zap.String("remote", conn.Remote()))
-	_, err := w.AddTowIntFunc(task)
+	result, err := w.AddTowIntFunc(task)
 	//TODO object stroage
+	objectID := ObjectID(task.ID) + ObjectID(task.FuncName) + ObjectID(strconv.FormatInt(time.Now().UnixNano(), 10))
+	w.objectStorage.SetObject(objectID, &Object{Type: common.ObjectTypeInt, Data: EncodeInt(result)})
+	w.connMgr.registerObjectChan <- objectID
 	if err != nil {
 		return err
 	}

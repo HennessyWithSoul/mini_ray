@@ -102,8 +102,8 @@ func NewConnection(parent context.Context, lg *zap.Logger, pool *ants.Pool, id u
 	if c.lg != nil {
 		c.lg = c.lg.With(zap.String("endpoint", endpoint), zap.Uint64("cid", c.id))
 	}
-	for _, o := range opts {
-		o(c)
+	for _, opt := range opts {
+		opt(c)
 	}
 	return c
 }

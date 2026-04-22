@@ -1,10 +1,11 @@
 package common
 
 type Options struct {
-	maxConnections int
-	ReuseAddr      bool
-	ReusePort      bool
-	TaskChanSize   int
+	maxConnections         int
+	ReuseAddr              bool
+	ReusePort              bool
+	TaskChanSize           int
+	RegisterObjectChanSize int
 }
 
 type Option func(*Options)
@@ -30,5 +31,11 @@ func WithReusePort(reusePort bool) Option {
 func WithTaskChanSize(size int) Option {
 	return func(o *Options) {
 		o.TaskChanSize = size
+	}
+}
+
+func WithRegisterObjectChanSize(size int) Option {
+	return func(o *Options) {
+		o.RegisterObjectChanSize = size
 	}
 }
